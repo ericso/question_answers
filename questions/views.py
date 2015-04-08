@@ -10,7 +10,7 @@ from questions.models import Question, Answer
 def questions(request, q_id=None, a_id=None):
   """
   """
-  if request.method == 'POST':
+  if request.method == 'PUT':
     try:
       answer = Answer.objects.get(pk=a_id)
       print(answer)
@@ -30,7 +30,7 @@ def questions(request, q_id=None, a_id=None):
         'msg': 'Found answer, incremented count'
       })
 
-  # Query for some question
+  # Query for a random question and a set of answers to that question
   question = Question.objects.order_by('?')[0]
   answers_qs = question.answer_set.all()
 

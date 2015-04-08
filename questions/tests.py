@@ -50,14 +50,14 @@ class ApiTest(TestCase):
     )
     return json.loads(response.content.decode())
 
-  def _post_answer(self, q_id=None, a_id=None, **kwargs):
+  def _put_answer(self, q_id=None, a_id=None, **kwargs):
     path = '/question/'
     if q_id:
       path += '%s/' % (q_id,)
     if a_id:
       path += '%s/' % (a_id,)
 
-    response = self.client.post(
+    response = self.client.put(
       path=path,
       data=kwargs,
       HTTP_X_REQUESTED_WITH='XMLHttpRequest'
@@ -82,11 +82,11 @@ class ApiTest(TestCase):
     self.assertIn('answers', data.keys())
 
   def test_post_answer_returns_error_status_if_no_question_or_answer_provided(self):
-    response = self._post_answer()
+    response = self._put_answer()
     self.assertEqual(response['status'], 'Error')
     self.assertEqual(response['msg'], 'No answer found')
 
   def test_post_answer_returns_success_status_if_question_found(self):
-    response = self._post_answer(q_id=1, a_id=1)
+    response = self._put_answer(q_id=1, a_id=1)
     self.assertEqual(response['status'], 'Success')
     self.assertEqual(response['msg'], 'Found answer, incremented count')
