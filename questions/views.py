@@ -1,6 +1,6 @@
 import json
 
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse
 from django.core import serializers
 from django.db.models import Q
 
@@ -15,15 +15,20 @@ def questions(request, q_id=None, a_id=None):
       answer = Answer.objects.get(pk=a_id)
       print(answer)
     except:
-      raise Http404
-      # return HttpResponse(404)
+      return JsonResponse({
+        'status': 'Error',
+        'msg': 'No answer found'
+      })
     else:
       if answer:
         answer.count += 1
         answer.save()
 
       print(answer)
-      return HttpResponse(200)
+      return JsonResponse({
+        'status': 'Success',
+        'msg': 'Found answer, incremented count'
+      })
 
   # Query for some question
   question = Question.objects.order_by('?')[0]

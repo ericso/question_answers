@@ -44,22 +44,36 @@ class ApiTest(TestCase):
 
   def _get_question(self, **kwargs):
     response = self.client.get(
-      '/question/',
-      HTTP_X_REQUESTED_WITH='XMLHttpRequest',
-      data=kwargs
+      path='/question/',
+      data=kwargs,
+      HTTP_X_REQUESTED_WITH='XMLHttpRequest'
     )
     return json.loads(response.content.decode())
 
+  def _post_answer(self, q_id=None, a_id=None, **kwargs):
+    path = '/question/'
+    if q_id:
+      path += '%s/' % (q_id,)
+    if a_id:
+      path += '%s/' % (a_id,)
+
+    response = self.client.post(
+      path=path,
+      data=kwargs,
+      HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+    )
+    return json.loads(response.content.decode())
+    # return response
 
   ### Test Methods ###
-  def test_question_route_returns_200(self):
+  def test_get_question_returns_200(self):
     response = self.client.get(
       '/question/',
       HTTP_X_REQUESTED_WITH='XMLHttpRequest'
     )
     self.assertEqual(response.status_code, 200)
 
-  def test_question_route_returns_question(self):
+  def test_get_question_returns_question(self):
     data = self._get_question()
     self.assertIn('question', data.keys())
 
@@ -67,17 +81,12 @@ class ApiTest(TestCase):
     data = self._get_question()
     self.assertIn('answers', data.keys())
 
-  def test_post_answer_route_returns_404_if_no_answer_provided(self):
-    response = self.client.post(
-      '/question/',
-      HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-    )
-    print(response.status_code)
-    self.assertEqual(response.status_code, 404)
+  def test_post_answer_returns_error_status_if_no_question_or_answer_provided(self):
+    response = self._post_answer()
+    self.assertEqual(response['status'], 'Error')
+    self.assertEqual(response['msg'], 'No answer found')
 
-  def test_post_answer_route_returns_200_if_question_found(self):
-    response = self.client.post(
-      '/question/1/1/',
-      HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-    )
-    self.assertEqual(response.status_code, 200)
+  def test_post_answer_returns_success_status_if_question_found(self):
+    response = self._post_answer(q_id=1, a_id=1)
+    self.assertEqual(response['status'], 'Success')
+    self.assertEqual(response['msg'], 'Found answer, incremented count')
