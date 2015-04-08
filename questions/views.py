@@ -8,7 +8,8 @@ from questions.models import Question, Answer
 
 
 def questions(request):
-
+  """
+  """
   # Query for some question
   question = Question.objects.order_by('?')[0]
   answers_qs = question.answer_set.all()
@@ -30,7 +31,7 @@ def questions(request):
     'answers': answers_json
   }
 
-  return JsonResponse(resp, safe=False)
+  return JsonResponse(resp)
 
 
 def answer(request, q_id, a_id):
