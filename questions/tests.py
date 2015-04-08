@@ -67,16 +67,17 @@ class ApiTest(TestCase):
     data = self._get_question()
     self.assertIn('answers', data.keys())
 
-  def test_post_answer_route_returns_404_if_no_question(self):
+  def test_post_answer_route_returns_404_if_no_answer_provided(self):
     response = self.client.post(
-      '/question/answer/',
+      '/question/',
       HTTP_X_REQUESTED_WITH='XMLHttpRequest'
     )
+    print(response.status_code)
     self.assertEqual(response.status_code, 404)
 
   def test_post_answer_route_returns_200_if_question_found(self):
     response = self.client.post(
-      '/question/answer/1/1/',
+      '/question/1/1/',
       HTTP_X_REQUESTED_WITH='XMLHttpRequest'
     )
     self.assertEqual(response.status_code, 200)
